@@ -8,7 +8,7 @@
 
 import unittest
 
-import jsonpickle
+import typedjson
 
 
 class CustomObject(object):
@@ -16,7 +16,7 @@ class CustomObject(object):
     def __eq__(self, other):
         return True
 
-class NullHandler(jsonpickle.handlers.BaseHandler):
+class NullHandler(typedjson.handlers.BaseHandler):
     _handles = CustomObject,
 
     def flatten(self, obj, data):
@@ -27,8 +27,8 @@ class NullHandler(jsonpickle.handlers.BaseHandler):
 
 class HandlerTests(unittest.TestCase):
     def roundtrip(self, ob):
-        encoded = jsonpickle.encode(ob)
-        decoded = jsonpickle.decode(encoded)
+        encoded = typedjson.encode(ob)
+        decoded = typedjson.decode(encoded)
         self.assertEqual(decoded, ob)
         return decoded
 

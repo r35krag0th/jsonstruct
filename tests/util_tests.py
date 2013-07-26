@@ -11,9 +11,9 @@ import doctest
 import time
 
 from six import u
-import jsonpickle.util
-from jsonpickle.util import *
-from jsonpickle._samples import Thing, ListSubclass, DictSubclass
+import typedjson.util
+from typedjson.util import *
+from typedjson._samples import Thing, ListSubclass, DictSubclass
 
 class IsPrimitiveTestCase(unittest.TestCase):
     def test_int(self):
@@ -123,7 +123,7 @@ def suite():
     suite.addTest(unittest.makeSuite(IsDictionarySubclass))
     suite.addTest(unittest.makeSuite(IsCollectionSubclass))
     suite.addTest(unittest.makeSuite(IsNonComplex))
-    suite.addTest(doctest.DocTestSuite(jsonpickle.util))
+    suite.addTest(doctest.DocTestSuite(typedjson.util))
     return suite
 
 if __name__ == '__main__':
