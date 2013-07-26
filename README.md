@@ -10,10 +10,13 @@ The key difference between this library and jsonpickle is that during deserializ
         name = ""
         title = ""
         address = Address()
+        safe_houses = [Address()]   # This indicates a list of Address.
+
 
     class Address(object):
         city = ""
         province = ""
+
 
     t = Test()
     t.name = "Alice"
@@ -22,14 +25,20 @@ The key difference between this library and jsonpickle is that during deserializ
     t.address.city = "Toronto"
     t.address.province = "Ontario"
 
+    t.safe_houses = [Address(), Address()]
+    t.safe_houses[0].city = "Waterloo"
+    t.safe_houses[1].city = "Middle of nowhere"
+
     j = typedjson.encode(t)
-    print j         # '{"title": "Developer", "name": "Alice", "address": {"province": "Ontario", "city": "Toronto"}}'
+    print j         # '{"title": "Developer", "name": "Alice", "safe_houses": [{"city": "Waterloo"}, {"city": "Middle of nowhere"}], "address": {"province": "Ontario", "city": "Toronto"}}'
 
     u = typedjson.decode(j, Test)
 
     print u.name    # 'Alice'
     print u.title   # 'Developer'
-    print u.address.city    # 'Toronto'
+    print u.address.city        # 'Toronto'
+    print u.safe_houses[0].city # 'Waterloo'
+    print u.safe_houses[1].city # 'Middle of nowhere'
 
 The purpose of this library is that you can use it to create typed RESTful web services or clients, where data structures need to be defined and shared between client and server. It is also not ideal to expect incoming or outgoing JSON request or response to contain Python types as part of the JSON. Data types needed for services could sometimes grow very complex, making schema/type definition much more important and easier to understand.
 
