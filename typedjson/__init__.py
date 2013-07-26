@@ -112,7 +112,7 @@ def encode(value, unpicklable=False, max_depth=None):
                 max_depth=max_depth)
     return json.encode(j.flatten(value))
 
-def decode(string, cls):
+def decode(string, cls=None):
     """
     Convert a JSON string into a Python object.
 
