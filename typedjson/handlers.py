@@ -5,7 +5,7 @@ must derive from BaseHandler and override ``.flatten`` and
 
 The handler may also declare a ``_handles`` class property which
 should be a sequence of types handled by that handler. See the `mod:_handlers`
-module for more examples of internal handlers implemented in jsonpickle.
+module for more examples of internal handlers implemented in typedjson.
 
 A handler may also be late-bound to other types by calling the ``.handles``
 method on the class. For example, the
@@ -78,7 +78,7 @@ class BaseHandler(object):
         raise NotImplementedError("Abstract method.")
 
 # for backward compatibility, provide 'registry'
-# jsonpickle 0.4 clients will call it with something like:
+# typedjson 0.4 clients will call it with something like:
 # registry.register(handled_type, handler_class)
 class registry:
     @staticmethod

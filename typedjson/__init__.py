@@ -8,7 +8,7 @@
 
 """Python library for serializing any arbitrary object graph into JSON.
 
-jsonpickle can take almost any Python object and turn the object into JSON.
+typedjson can take almost any Python object and turn the object into JSON.
 Additionally, it can reconstitute the object back into Python.
 
 The object must be accessible globally via a module and must
@@ -16,28 +16,28 @@ inherit from object (AKA new-style classes).
 
 Create an object.
 
-    >>> from jsonpickle._samples import Thing
+    >>> from typedjson._samples import Thing
     >>> obj = Thing('A String')
     >>> print obj.name
     A String
 
-Use jsonpickle to transform the object into a JSON string.
+Use typedjson to transform the object into a JSON string.
 
-    >>> import jsonpickle
-    >>> pickled = jsonpickle.encode(obj)
+    >>> import typedjson
+    >>> pickled = typedjson.encode(obj)
     >>> print(pickled)
-    {"py/object": "jsonpickle._samples.Thing", "name": "A String", "child": null}
+    {"py/object": "typedjson._samples.Thing", "name": "A String", "child": null}
 
-Use jsonpickle to recreate a Python object from a JSON string
+Use typedjson to recreate a Python object from a JSON string
 
-    >>> unpickled = jsonpickle.decode(pickled)
+    >>> unpickled = typedjson.decode(pickled)
     >>> str(unpickled.name)
     'A String'
 
 .. warning::
 
     Loading a JSON string from an untrusted source represents a potential
-    security vulnerability.  jsonpickle makes no attempt to sanitize the input.
+    security vulnerability.  typedjson makes no attempt to sanitize the input.
 
 The new object has the same type and data, but essentially is now a copy of
 the original.
@@ -53,26 +53,26 @@ If you will never need to load (regenerate the Python class from JSON), you can
 pass in the keyword unpicklable=False to prevent extra information from being
 added to JSON.
 
-    >>> oneway = jsonpickle.encode(obj, unpicklable=False)
+    >>> oneway = typedjson.encode(obj, unpicklable=False)
     >>> print oneway
     {"name": "A String", "child": null}
 
 """
 
-from jsonpickle.pickler import Pickler
-from jsonpickle.unpickler import Unpickler
-from jsonpickle.backend import JSONBackend
-from jsonpickle.version import VERSION
+from typedjson.pickler import Pickler
+from typedjson.unpickler import Unpickler
+from typedjson.backend import JSONBackend
+from typedjson.version import VERSION
 
 # ensure built-in handlers are loaded
-__import__('jsonpickle._handlers')
+__import__('typedjson._handlers')
 
 __all__ = ('encode', 'decode')
 __version__ = VERSION
 
 json = JSONBackend()
 
-# Export specific JSONPluginMgr methods into the jsonpickle namespace
+# Export specific JSONPluginMgr methods into the typedjson namespace
 set_preferred_backend = json.set_preferred_backend
 set_encoder_options = json.set_encoder_options
 load_backend = json.load_backend
@@ -88,7 +88,7 @@ def encode(value, unpicklable=True, max_depth=None):
     necessary to turn the JSON data back into Python objects.
 
     The keyword argument 'max_depth' defaults to None.
-    If set to a non-negative integer then jsonpickle will not recurse
+    If set to a non-negative integer then typedjson will not recurse
     deeper than 'max_depth' steps into the object.  Anything deeper
     than 'max_depth' is represented using a Python repr() of the object.
 
