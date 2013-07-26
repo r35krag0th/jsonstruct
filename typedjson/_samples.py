@@ -9,8 +9,8 @@
 import collections
 import datetime
 
-import jsonpickle
-from jsonpickle.compat import set
+import typedjson
+from typedjson.compat import set
 
 
 class Thing(object):
@@ -156,10 +156,10 @@ class ObjWithDate(object):
         self.data_ref = dict(b='b', ts=ts)
 
 
-class ObjWithJsonPickleRepr(object):
+class ObjWithtypedjsonRepr(object):
 
     def __init__(self):
         self.data = {'a': self}
 
     def __repr__(self):
-        return jsonpickle.encode(self)
+        return typedjson.encode(self)

@@ -3,6 +3,7 @@
 #
 # Copyright (C) 2008 John Paulett (john -at- paulett.org)
 # Copyright (C) 2009-2013 David Aguilar (davvid -at- gmail.com)
+# Copyright (C) 2013 Xingchen Yu (initialxy -at- gmail.com)
 # All rights reserved.
 #
 # This software is licensed as described in the file COPYING, which
@@ -15,25 +16,25 @@ except ImportError:
     import distutils.core as setup_mod
 
 here = os.path.dirname(__file__)
-version = os.path.join(here, 'jsonpickle', 'version.py')
+version = os.path.join(here, 'typedjson', 'version.py')
 scope = {}
 exec(open(version).read(), scope)
 
 SETUP_ARGS = dict(
-    name="jsonpickle",
+    name="typedjson",
     version=scope['VERSION'],
     description="Python library for serializing any "
                 "arbitrary object graph into JSON",
     long_description =
-        "jsonpickle converts complex Python objects to and "
-        "from JSON.",
-    author="David Aguilar",
-    author_email="davvid -at- gmail.com",
-    url="http://jsonpickle.github.io/",
+        "typedjson converts typed Python object to and from JSON.",
+    author="Xingchen Yu",
+    author_email="initialxy -at- gmail.com",
+    url="https://github.com/initialxy/typedjson",
     license="BSD",
     platforms=['POSIX', 'Windows'],
-    keywords=['json pickle', 'json', 'pickle', 'marshal',
-              'serialization', 'JavaScript Object Notation'],
+    keywords=['typedjson', 'typed json', 'json', 'pickle', 'marshal',
+            'unmarshal', 'serialization', 'deserialization',
+            'JavaScript Object Notation'],
     classifiers=[
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
@@ -46,7 +47,7 @@ SETUP_ARGS = dict(
         "Programming Language :: JavaScript",
     ],
     options={'clean': {'all': 1}},
-    packages=["jsonpickle"],
+    packages=["typedjson"],
 )
 
 

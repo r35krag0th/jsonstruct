@@ -8,10 +8,10 @@
 
 import operator
 import sys
-import jsonpickle.util as util
-import jsonpickle.tags as tags
-import jsonpickle.handlers as handlers
-from jsonpickle.compat import set
+import typedjson.util as util
+import typedjson.tags as tags
+import typedjson.handlers as handlers
+from typedjson.compat import set
 
 
 class Unpickler(object):
@@ -181,10 +181,10 @@ class Unpickler(object):
     def _refname(self):
         """Calculates the name of the current location in the JSON stack.
 
-        This is called as jsonpickle traverses the object structure to
+        This is called as typedjson traverses the object structure to
         create references to previously-traversed objects.  This allows
         cyclical data structures such as doubly-linked lists.
-        jsonpickle ensures that duplicate python references to the same
+        typedjson ensures that duplicate python references to the same
         object results in only a single JSON object definition and
         special reference tags to represent each reference.
 
@@ -206,7 +206,7 @@ class Unpickler(object):
 
     def _mkref(self, obj):
         """
-        >>> from jsonpickle._samples import Thing
+        >>> from typedjson._samples import Thing
         >>> thing = Thing('referenced-thing')
         >>> u = Unpickler()
         >>> u._mkref(thing)
@@ -222,7 +222,7 @@ class Unpickler(object):
         except KeyError:
             self._obj_to_idx[obj_id] = len(self._objs)
             self._objs.append(obj)
-            # Backwards compatibility: old versions of jsonpickle
+            # Backwards compatibility: old versions of typedjson
             # produced "py/ref" references.
             self._namedict[self._refname()] = obj
         return obj
@@ -231,8 +231,8 @@ class Unpickler(object):
 def loadclass(module_and_name):
     """Loads the module and returns the class.
 
-    >>> loadclass('jsonpickle._samples.Thing')
-    <class 'jsonpickle._samples.Thing'>
+    >>> loadclass('typedjson._samples.Thing')
+    <class 'typedjson._samples.Thing'>
 
     >>> loadclass('example.module.does.not.exist.Missing')
 
@@ -286,7 +286,7 @@ def loadrepr(reprstr):
     """Returns an instance of the object from the object's repr() string.
     It involves the dynamic specification of code.
 
-    >>> loadrepr('jsonpickle._samples/jsonpickle._samples.Thing("json")')
+    >>> loadrepr('typedjson._samples/typedjson._samples.Thing("json")')
     Thing("json")
 
     """

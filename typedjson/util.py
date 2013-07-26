@@ -12,9 +12,9 @@ determining the type of an object.
 import time
 import types
 
-from jsonpickle import tags
-from jsonpickle.compat import set
-from jsonpickle.compat import unicode, long
+from typedjson import tags
+from typedjson.compat import set
+from typedjson.compat import unicode, long
 
 
 COLLECTIONS = (list, set, tuple)
