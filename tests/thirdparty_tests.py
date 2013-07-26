@@ -8,7 +8,7 @@
 
 import unittest
 
-import jsonpickle
+import typedjson
 
 RSS_DOC = """<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:base="http://example.org/" xml:lang="en">
@@ -65,8 +65,8 @@ class FeedParserTest(unittest.TestCase):
         self.doc = feedparser.parse(RSS_DOC)
 
     def test(self):
-        pickled = jsonpickle.encode(self.doc)
-        unpickled = jsonpickle.decode(pickled)
+        pickled = typedjson.encode(self.doc)
+        unpickled = typedjson.decode(pickled)
         self.assertEquals(self.doc['feed']['title'], unpickled['feed']['title'])
 
 def suite():

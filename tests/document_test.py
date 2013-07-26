@@ -1,7 +1,7 @@
 import unittest
-import jsonpickle
+import typedjson
 
-from jsonpickle._samples import Document, Section, Question
+from typedjson._samples import Document, Section, Question
 
 class DocumentTestCase(unittest.TestCase):
     def test_cyclical(self):
@@ -30,8 +30,8 @@ class DocumentTestCase(unittest.TestCase):
         section2.add_child(question3)
         section2.add_child(question4)
 
-        pickled = jsonpickle.encode(document)
-        unpickled = jsonpickle.decode(pickled)
+        pickled = typedjson.encode(document)
+        unpickled = typedjson.decode(pickled)
 
         self.assertEqual(str(document), str(unpickled))
 
