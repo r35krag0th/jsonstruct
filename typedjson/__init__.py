@@ -79,11 +79,11 @@ load_backend = json.load_backend
 remove_backend = json.remove_backend
 
 
-def encode(value, unpicklable=True, max_depth=None):
+def encode(value, unpicklable=False, max_depth=None):
     """
     Return a JSON formatted representation of value, a Python object.
 
-    The keyword argument 'unpicklable' defaults to True.
+    The keyword argument 'unpicklable' defaults to False.
     If set to False, the output will not contain the information
     necessary to turn the JSON data back into Python objects.
 
@@ -112,7 +112,7 @@ def encode(value, unpicklable=True, max_depth=None):
                 max_depth=max_depth)
     return json.encode(j.flatten(value))
 
-def decode(string):
+def decode(string, cls):
     """
     Convert a JSON string into a Python object.
 
@@ -122,4 +122,4 @@ def decode(string):
     36
     """
     j = Unpickler()
-    return j.restore(json.decode(string))
+    return j.restore(json.decode(string), cls)
