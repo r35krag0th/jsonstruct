@@ -84,7 +84,7 @@ class Unpickler(object):
             obj = loadrepr(obj[tags.REPR])
             return self._pop(self._mkref(obj))
 
-        if cls_def and util.is_type(cls_def):
+        if util.is_type(cls_def):
             # check custom handlers
             HandlerClass = handlers.BaseHandler._registry.get(cls_def)
             if HandlerClass:
@@ -130,11 +130,12 @@ class Unpickler(object):
                 # ignore the reserved attribute
                 if k in tags.RESERVED:
                     continue
+
                 self._namestack.append(k)
                 # step into the namespace
                 value = self.restore(v, get_attr_cls_def(cls_def, k))
                 if (util.is_noncomplex(instance) or
-                        util.is_dictionary_subclass(instance)):
+                        util.is_dictionary(instance)):
                     instance[k] = value
                 else:
                     setattr(instance, k, value)
@@ -153,10 +154,16 @@ class Unpickler(object):
             return self._pop(instance)
 
         if util.is_list(obj):
-            parent = []
+            if util.is_collection(cls_def):
+                parent = type(cls_def)()
+            else:
+                parent = []
             self._mkref(parent)
-            children = [self.restore(v) for v in obj]
-            parent.extend(children)
+            children = [self.restore(v, get_collection_item_type(cls_def)) for v in obj]
+            if type(parent) is set:
+                parent.update(children)
+            else:
+                parent.extend(children)
             return self._pop(parent)
 
         if has_tag(obj, tags.TUPLE):
@@ -250,6 +257,9 @@ def loadclass(module_and_name):
 
 
 def loadfactory(obj):
+    if not util.is_dictionary(obj):
+        return None
+
     try:
         default_factory = obj['default_factory']
     except KeyError:
@@ -319,15 +329,26 @@ def get_attr_cls_def(cls_def, k):
 
     attr = getattr(cls_def, k)
 
-    if not attr or util.is_function(attr):
+    return get_obj_cls_def(attr)
+
+
+def get_obj_cls_def(obj):
+    if not obj or util.is_function(obj):
         return None
 
-    if (util.is_dictionary(attr) or util.is_collection(attr) or 
-            util.is_dictionary_subclass(attr) or
-            util.is_collection_subclass(attr)):
-        return attr
+    if util.is_container(obj):
+        return obj
 
-    if not util.is_primitive(attr):
-        return type(attr)
+    if not util.is_primitive(obj):
+        return type(obj)
 
     return None
+
+
+def get_collection_item_type(cls_def):
+    if (cls_def and
+            util.is_collection(cls_def) and
+            len(cls_def) > 0):
+        return get_obj_cls_def(cls_def.__iter__().next())
+    return None
+        
