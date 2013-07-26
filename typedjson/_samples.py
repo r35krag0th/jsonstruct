@@ -156,7 +156,7 @@ class ObjWithDate(object):
         self.data_ref = dict(b='b', ts=ts)
 
 
-class ObjWithtypedjsonRepr(object):
+class ObjWithTypedJsonRepr(object):
 
     def __init__(self):
         self.data = {'a': self}
