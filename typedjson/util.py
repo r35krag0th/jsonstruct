@@ -230,3 +230,6 @@ def is_installed(module):
 
 def is_list_like(obj):
     return hasattr(obj, '__getitem__') and hasattr(obj, 'append')
+
+def is_container(obj):
+    return is_dictionary(obj) or is_collection(obj)
