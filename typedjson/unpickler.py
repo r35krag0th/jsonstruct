@@ -49,7 +49,7 @@ class Unpickler(object):
             self._reset()
         return value
 
-    def restore(self, obj):
+    def restore(self, obj, cls_def = None):
         """Restores a flattened object to its original python state.
 
         Simply returns any of the basic builtin types
@@ -59,6 +59,10 @@ class Unpickler(object):
         'hello world'
         >>> u.restore({'key': 'value'})
         {'key': 'value'}
+
+        cls_def could be either a type or an instance. In case of instance, it
+        will be used to define types inside a list or dict. eg. [Test()] means
+        a list of Test.
         """
         self._push()
 
@@ -80,36 +84,32 @@ class Unpickler(object):
             obj = loadrepr(obj[tags.REPR])
             return self._pop(self._mkref(obj))
 
-        if has_tag(obj, tags.OBJECT):
-            cls = loadclass(obj[tags.OBJECT])
-            if not cls:
-                return self._pop(self._mkref(obj))
-
+        if cls_def and util.is_type(cls_def):
             # check custom handlers
-            HandlerClass = handlers.BaseHandler._registry.get(cls)
+            HandlerClass = handlers.BaseHandler._registry.get(cls_def)
             if HandlerClass:
                 handler = HandlerClass(self)
                 instance = handler.restore(obj)
                 return self._pop(self._mkref(instance))
 
             factory = loadfactory(obj)
-            args = getargs(obj)
+            args = getargs(obj, cls_def)
             if args:
                 args = self.restore(args)
             try:
-                if hasattr(cls, '__new__'):
+                if hasattr(cls_def, '__new__'):
                     # new style classes
                     if factory:
-                        instance = cls.__new__(cls, factory, *args)
+                        instance = cls_def.__new__(cls_def, factory, *args)
                         instance.default_factory = factory
                     else:
-                        instance = cls.__new__(cls, *args)
+                        instance = cls_def.__new__(cls_def, *args)
                 else:
-                    instance = object.__new__(cls)
+                    instance = object.__new__(cls_def)
             except TypeError:
                 # old-style classes
                 try:
-                    instance = cls()
+                    instance = cls_def()
                 except TypeError:
                     # fail gracefully if the constructor requires arguments
                     return self._pop(self._mkref(obj))
@@ -132,7 +132,7 @@ class Unpickler(object):
                     continue
                 self._namestack.append(k)
                 # step into the namespace
-                value = self.restore(v)
+                value = self.restore(v, get_attr_cls_def(cls_def, k))
                 if (util.is_noncomplex(instance) or
                         util.is_dictionary_subclass(instance)):
                     instance[k] = value
@@ -267,17 +267,14 @@ def loadfactory(obj):
     return None
 
 
-def getargs(obj):
-    try:
-        seq_list = obj[tags.SEQ]
-        obj_dict = obj[tags.OBJECT]
-    except KeyError:
+def getargs(obj, cls):
+    if not cls or tags.SEQ not in obj:
         return []
-    typeref = loadclass(obj_dict)
-    if not typeref:
-        return []
-    if hasattr(typeref, '_fields'):
-        if len(typeref._fields) == len(seq_list):
+
+    seq_list = obj[tags.SEQ]
+
+    if hasattr(cls, '_fields'):
+        if len(cls._fields) == len(seq_list):
             return seq_list
     return []
 
@@ -314,3 +311,23 @@ def has_tag(obj, tag):
 
     """
     return type(obj) is dict and tag in obj
+
+
+def get_attr_cls_def(cls_def, k):
+    if not cls_def or not k:
+        return None
+
+    attr = getattr(cls_def, k)
+
+    if not attr or util.is_function(attr):
+        return None
+
+    if (util.is_dictionary(attr) or util.is_collection(attr) or 
+            util.is_dictionary_subclass(attr) or
+            util.is_collection_subclass(attr)):
+        return attr
+
+    if not util.is_primitive(attr):
+        return type(attr)
+
+    return None
