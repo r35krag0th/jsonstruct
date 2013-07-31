@@ -86,6 +86,11 @@ class Unpickler(object):
             return self._pop(self._mkref(obj))
 
         if util.is_type(cls_def):
+            if not util.is_dictionary(obj):
+                # Type mismatch. cls_def is a type but we didn't get a dict
+                # from JSON. Return None.
+                return self._pop(None)
+
             # check custom handlers
             HandlerClass = handlers.BaseHandler._registry.get(cls_def)
             if HandlerClass:
@@ -127,21 +132,28 @@ class Unpickler(object):
                 instance.__setstate__(state)
                 return self._pop(instance)
 
-            for k, v in sorted(obj.items(), key=operator.itemgetter(0)):
-                # ignore the reserved attribute
-                if k in tags.RESERVED:
-                    continue
+            for k in util.get_public_variables(cls_def):
+                if k in obj:
+                    v = obj[k]
 
-                self._namestack.append(k)
-                # step into the namespace
-                value = self.restore(v, get_attr_cls_def(cls_def, k))
-                if (util.is_noncomplex(instance) or
-                        util.is_dictionary(instance)):
-                    instance[k] = value
+                    # ignore the reserved attribute
+                    if k in tags.RESERVED:
+                        continue
+
+                    self._namestack.append(k)
+                    # step into the namespace
+                    value = self.restore(v, get_attr_cls_def(cls_def, k))
+                    if (util.is_noncomplex(instance) or
+                            util.is_dictionary(instance)):
+                        instance[k] = value
+                    else:
+                        setattr(instance, k, value)
+                    # step out
+                    self._namestack.pop()
                 else:
-                    setattr(instance, k, value)
-                # step out
-                self._namestack.pop()
+                    # Attribute in cls_def but not given in JSON. Assign it to
+                    # None so that user could tell that it wasn't given know.
+                    setattr(instance, k, None)
 
             # Handle list and set subclasses
             if has_tag(obj, tags.SEQ):
@@ -161,11 +173,14 @@ class Unpickler(object):
                 parent = []
             self._mkref(parent)
             item_type = get_collection_item_type(cls_def)
-            children = [self.restore(v, item_type) for v in obj]
-            if type(parent) is set:
-                parent.update(children)
-            else:
-                parent.extend(children)
+            is_set = type(parent) is set
+            for v in obj:
+                restored_v = self.restore(v, item_type)
+                if is_set:
+                    parent.add(restored_v)
+                else:
+                    parent.append(restored_v)
+
             return self._pop(parent)
 
         if has_tag(obj, tags.TUPLE):
