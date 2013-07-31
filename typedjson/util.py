@@ -11,6 +11,7 @@ determining the type of an object.
 """
 import time
 import types
+import inspect
 
 from typedjson import tags
 from typedjson.compat import set
@@ -233,3 +234,10 @@ def is_list_like(obj):
 
 def is_container(obj):
     return is_dictionary(obj) or is_collection(obj)
+
+def get_public_variables(t):
+    """Returns public variables of a type t."""
+    return [i[0] for i in
+            inspect.getmembers(t, lambda i:not inspect.isroutine(i))
+            if not i[0].startswith("__")]
+
