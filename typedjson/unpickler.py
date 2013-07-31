@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2008 John Paulett (john -at- paulett.org)
+# Copyright (C) 2013 Xingchen Yu (initialxy -at- gmail.com)
 # All rights reserved.
 #
 # This software is licensed as described in the file COPYING, which
@@ -159,7 +160,8 @@ class Unpickler(object):
             else:
                 parent = []
             self._mkref(parent)
-            children = [self.restore(v, get_collection_item_type(cls_def)) for v in obj]
+            item_type = get_collection_item_type(cls_def)
+            children = [self.restore(v, item_type) for v in obj]
             if type(parent) is set:
                 parent.update(children)
             else:
@@ -175,10 +177,15 @@ class Unpickler(object):
                                   for v in obj[tags.SET]]))
 
         if util.is_dictionary(obj):
-            data = {}
+            if util.is_dictionary(cls_def):
+                data = type(cls_def)()
+            else:
+                data = {}
+            k_type, v_type = get_dictionary_item_type(cls_def)
+
             for k, v in sorted(obj.items(), key=operator.itemgetter(0)):
                 self._namestack.append(k)
-                data[k] = self.restore(v)
+                data[self.restore(k, k_type)] = self.restore(v, v_type)
                 self._namestack.pop()
 
             return self._pop(data)
@@ -346,9 +353,13 @@ def get_obj_cls_def(obj):
 
 
 def get_collection_item_type(cls_def):
-    if (cls_def and
-            util.is_collection(cls_def) and
-            len(cls_def) > 0):
+    if cls_def and util.is_collection(cls_def):
         return get_obj_cls_def(cls_def.__iter__().next())
     return None
+
+def get_dictionary_item_type(cls_def):
+    if cls_def and util.is_dictionary(cls_def):
+        k, v = cls_def.iteritems().next()
+        return get_obj_cls_def(k), get_obj_cls_def(v)
+    return None, None
         
