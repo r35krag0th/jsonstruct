@@ -31,12 +31,15 @@ class Pickler(object):
     'hello world'
     """
 
-    def __init__(self, unpicklable=True, max_depth=None):
+    def __init__(self, unpicklable=True, max_depth=None,
+            is_filter_none_attr=True):
         self.unpicklable = unpicklable
         ## The current recursion depth
         self._depth = -1
         ## The maximal recursion depth
         self._max_depth = max_depth
+        ## When attributes are None, whether or not they should be filtered out.
+        self._is_filter_none_attr = is_filter_none_attr
         ## Maps id(obj) to reference IDs
         self._objs = {}
 
@@ -208,7 +211,8 @@ class Pickler(object):
 
             # hack for zope persistent objects; this unghostifies the object
             getattr(obj, '_', None)
-            return self._flatten_dict_obj(obj.__dict__, data, True)
+            return self._flatten_dict_obj(obj.__dict__, data,
+                    self._is_filter_none_attr)
 
         if util.is_collection_subclass(obj):
             return self._flatten_collection_obj(obj, data)
