@@ -78,7 +78,7 @@ class BaseHandler(object):
         raise NotImplementedError("Abstract method.")
 
 # for backward compatibility, provide 'registry'
-# typedjson 0.4 clients will call it with something like:
+# josnpickle 0.4 clients will call it with something like:
 # registry.register(handled_type, handler_class)
 class registry:
     @staticmethod
