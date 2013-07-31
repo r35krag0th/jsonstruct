@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2008 John Paulett (john -at- paulett.org)
 # Copyright (C) 2009, 2011, 2013 David Aguilar
+# Copyright (C) 2013 Xingchen Yu (initialxy -at- gmail.com)
 # All rights reserved.
 #
 # This software is licensed as described in the file COPYING, which
@@ -207,7 +208,7 @@ class Pickler(object):
 
             # hack for zope persistent objects; this unghostifies the object
             getattr(obj, '_', None)
-            return self._flatten_dict_obj(obj.__dict__, data)
+            return self._flatten_dict_obj(obj.__dict__, data, True)
 
         if util.is_collection_subclass(obj):
             return self._flatten_collection_obj(obj, data)
@@ -218,7 +219,7 @@ class Pickler(object):
         if has_slots:
             return self._flatten_newstyle_with_slots(obj, data)
 
-    def _flatten_dict_obj(self, obj, data=None):
+    def _flatten_dict_obj(self, obj, data=None, is_filter_none=False):
         """Recursively call flatten() and return json-friendly dict
         """
         if data is None:
@@ -226,7 +227,9 @@ class Pickler(object):
 
         flatten = self._flatten_key_value_pair
         for k, v in sorted(obj.items(), key=operator.itemgetter(0)):
-            flatten(k, v, data)
+            # If it was requested that we filter out None values.
+            if not is_filter_none or v is not None:
+                flatten(k, v, data)
 
         # the collections.defaultdict protocol
         if hasattr(obj, 'default_factory') and callable(obj.default_factory):
