@@ -9,8 +9,8 @@
 import collections
 import datetime
 
-import typedjson
-from typedjson.compat import set
+import jsonstruct
+from jsonstruct.compat import set
 
 
 class Thing(object):
@@ -156,10 +156,10 @@ class ObjWithDate(object):
         self.data_ref = dict(b='b', ts=ts)
 
 
-class ObjWithTypedJsonRepr(object):
+class ObjWithJsonStructRepr(object):
 
     def __init__(self):
         self.data = {'a': self}
 
     def __repr__(self):
-        return typedjson.encode(self)
+        return jsonstruct.encode(self)

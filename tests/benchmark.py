@@ -20,14 +20,14 @@ if IS_25_DOWN:
 
 json = """\
 import feedparser
-import typedjson
-import typedjson.tests.thirdparty_tests as test
+import jsonstruct
+import jsonstruct.tests.thirdparty_tests as test
 doc = feedparser.parse(test.RSS_DOC)
 
-typedjson.set_preferred_backend('%s')
+jsonstruct.set_preferred_backend('%s')
 
-pickled = typedjson.encode(doc)
-unpickled = typedjson.decode(pickled)
+pickled = jsonstruct.encode(doc)
+unpickled = jsonstruct.decode(pickled)
 if doc['feed']['title'] != unpickled['feed']['title']:
     print 'Not a match'
 """ % mod

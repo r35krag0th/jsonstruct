@@ -8,10 +8,10 @@
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution.
 import operator
-import typedjson.util as util
-import typedjson.tags as tags
-import typedjson.handlers as handlers
-from typedjson.compat import unicode
+import jsonstruct.util as util
+import jsonstruct.tags as tags
+import jsonstruct.handlers as handlers
+from jsonstruct.compat import unicode
 
 
 class Pickler(object):
@@ -22,9 +22,9 @@ class Pickler(object):
     simplejson library supports.
 
     Setting max_depth to a negative number means there is no
-    limit to the depth typedjson should recurse into an
+    limit to the depth jsonstruct should recurse into an
     object.  Setting it to zero or higher places a hard limit
-    on how deep typedjson recurses into objects, dictionaries, etc.
+    on how deep jsonstruct recurses into objects, dictionaries, etc.
 
     >>> p = Pickler()
     >>> p.flatten('hello world')
@@ -274,7 +274,7 @@ class Pickler(object):
 def _mktyperef(obj):
     """Return a typeref dictionary.  Used for references.
 
-    >>> from typedjson import tags
+    >>> from jsonstruct import tags
     >>> _mktyperef(AssertionError)[tags.TYPE].rsplit('.', 1)[0]
     'exceptions'
 
@@ -288,7 +288,7 @@ def _getclassdetail(obj):
 
     >>> class Example(object): pass
     >>> _getclassdetail(Example())
-    ('typedjson.pickler', 'Example')
+    ('jsonstruct.pickler', 'Example')
     >>> _getclassdetail(25)
     ('__builtin__', 'int')
     >>> _getclassdetail(None)

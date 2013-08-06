@@ -5,7 +5,7 @@ must derive from BaseHandler and override ``.flatten`` and
 
 The handler may also declare a ``_handles`` class property which
 should be a sequence of types handled by that handler. See the `mod:_handlers`
-module for more examples of internal handlers implemented in typedjson.
+module for more examples of internal handlers implemented in jsonstruct.
 
 A handler may also be late-bound to other types by calling the ``.handles``
 method on the class. For example, the

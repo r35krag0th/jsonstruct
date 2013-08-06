@@ -1,7 +1,7 @@
-typedjson
-=========
+jsonstruct
+==========
 
-typedjson is a library for two way conversion of typed Python object and JSON. This project is originally a fork of [jsonpickle](jsonpickle.github.com) (Thanks guys!).
+jsonstruct is a library for two way conversion of typed Python object and JSON. This project is originally a fork of [jsonpickle](jsonpickle.github.com) (Thanks guys!).
 
 The key difference between this library and jsonpickle is that during deserialization, jsonpickle requires Python types to be specified as part of the JSON. This library intend to remove this requirement, and instead, allows you to specify the class that it will be deserialized into. It will exam the class definiton and create a typed Python object as a result. This approach is similar to how [Jackson](https://github.com/FasterXML/jackson) works.
 
@@ -29,10 +29,10 @@ The key difference between this library and jsonpickle is that during deserializ
     t.safe_houses[0].city = "Waterloo"
     t.safe_houses[1].city = "Middle of nowhere"
 
-    j = typedjson.encode(t)
+    j = jsonstruct.encode(t)
     print j         # '{"title": "Developer", "name": "Alice", "safe_houses": [{"city": "Waterloo"}, {"city": "Middle of nowhere"}], "address": {"province": "Ontario", "city": "Toronto"}}'
 
-    u = typedjson.decode(j, Test)
+    u = jsonstruct.decode(j, Test)
 
     print u.name    # 'Alice'
     print u.title   # 'Developer'

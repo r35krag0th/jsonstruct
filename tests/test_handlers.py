@@ -8,7 +8,7 @@
 
 import unittest
 
-import typedjson
+import jsonstruct
 
 
 class CustomObject(object):
@@ -16,7 +16,7 @@ class CustomObject(object):
     def __eq__(self, other):
         return True
 
-class NullHandler(typedjson.handlers.BaseHandler):
+class NullHandler(jsonstruct.handlers.BaseHandler):
     _handles = CustomObject,
 
     def flatten(self, obj, data):
@@ -27,8 +27,8 @@ class NullHandler(typedjson.handlers.BaseHandler):
 
 class HandlerTests(unittest.TestCase):
     def roundtrip(self, ob):
-        encoded = typedjson.encode(ob)
-        decoded = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(ob)
+        decoded = jsonstruct.decode(encoded)
         self.assertEqual(decoded, ob)
         return decoded
 

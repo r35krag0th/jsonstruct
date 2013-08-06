@@ -2,9 +2,9 @@ import sys
 import datetime
 import collections
 
-import typedjson
+import jsonstruct
 
-class DatetimeHandler(typedjson.handlers.BaseHandler):
+class DatetimeHandler(jsonstruct.handlers.BaseHandler):
     """
     Datetime objects use __reduce__, and they generate binary strings encoding
     the payload. This handler encodes that payload to reconstruct the
@@ -30,7 +30,7 @@ class DatetimeHandler(typedjson.handlers.BaseHandler):
         params = (value,) + tuple(params)
         return cls.__new__(cls, *params)
 
-class SimpleReduceHandler(typedjson.handlers.BaseHandler):
+class SimpleReduceHandler(jsonstruct.handlers.BaseHandler):
     """
     Follow the __reduce__ protocol to pickle an object. As long as the factory
     and its arguments are pickleable, this should pickle any object that

@@ -1,4 +1,4 @@
-"""The typedjson.tags module provides the custom tags
+"""The jsonstruct.tags module provides the custom tags
 used for pickling and unpickling Python objects.
 
 These tags are keys into the flattened dictionaries
@@ -6,7 +6,7 @@ created by the Pickler class.  The Unpickler uses
 these custom key names to identify dictionaries
 that need to be specially handled.
 """
-from typedjson.compat import set
+from jsonstruct.compat import set
 
 ID = 'py/id'
 OBJECT = 'py/object'
