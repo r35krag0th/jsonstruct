@@ -46,7 +46,7 @@ class JSONBackend(object):
         """Ensures that we've loaded at least one JSON backend."""
         if self._verified:
             return
-        raise AssertionError('typedjson requires at least one of the '
+        raise AssertionError('jsonstruct requires at least one of the '
                              'following:\n'
                              '    python2.6, simplejson, or demjson')
 
@@ -161,14 +161,14 @@ class JSONBackend(object):
         """
         Set the preferred json backend.
 
-        If a preferred backend is set then typedjson tries to use it
+        If a preferred backend is set then jsonstruct tries to use it
         before any other backend.
 
         For example::
 
             set_preferred_backend('simplejson')
 
-        If the backend is not one of the built-in typedjson backends
+        If the backend is not one of the built-in jsonstruct backends
         (json/simplejson, or demjson) then you must load the backend
         prior to calling set_preferred_backend.
 
@@ -186,7 +186,7 @@ class JSONBackend(object):
         """
         Associate encoder-specific options with an encoder.
 
-        After calling set_encoder_options, any calls to typedjson's
+        After calling set_encoder_options, any calls to jsonstruct's
         encode method will pass the supplied args and kwargs along to
         the appropriate backend's encode method.
 

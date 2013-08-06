@@ -1,7 +1,7 @@
-from typedjson._samples import Thing
+from jsonstruct._samples import Thing
 
 from six import u
-import typedjson
+import jsonstruct
 import unittest
 from warnings import warn
 
@@ -11,7 +11,7 @@ SAMPLE_DATA = {'things': [Thing('data')]}
 class BackendTestCase(unittest.TestCase):
 
     def _is_installed(self, backend):
-        if not typedjson.util.is_installed(backend):
+        if not jsonstruct.util.is_installed(backend):
             self.fail('%s not available; please install' % backend)
 
     def set_backend(self, *args):
@@ -19,23 +19,23 @@ class BackendTestCase(unittest.TestCase):
 
         self._is_installed(backend)
 
-        typedjson.load_backend(*args)
-        typedjson.set_preferred_backend(backend)
+        jsonstruct.load_backend(*args)
+        jsonstruct.set_preferred_backend(backend)
 
     def set_preferred_backend(self, backend):
         self._is_installed(backend)
 
-        typedjson.set_preferred_backend(backend)
+        jsonstruct.set_preferred_backend(backend)
 
     def tearDown(self):
         # always reset to default backend
-        typedjson.set_preferred_backend('json')
+        jsonstruct.set_preferred_backend('json')
 
     def assertEncodeDecode(self, expected_pickled):
-        pickled = typedjson.encode(SAMPLE_DATA)
+        pickled = jsonstruct.encode(SAMPLE_DATA)
 
         self.assertEqual(expected_pickled, pickled)
-        unpickled = typedjson.decode(pickled)
+        unpickled = jsonstruct.decode(pickled)
         self.assertEqual(SAMPLE_DATA['things'][0].name,
                          unpickled['things'][0].name)
 
@@ -46,7 +46,7 @@ class JsonTestCase(BackendTestCase):
     def test(self):
         expected_pickled = (
                 '{"things": [{'
-                    '"py/object": "typedjson._samples.Thing",'
+                    '"py/object": "jsonstruct._samples.Thing",'
                     ' "name": "data",'
                     ' "child": null}'
                 ']}')
@@ -59,7 +59,7 @@ class SimpleJsonTestCase(BackendTestCase):
     def test(self):
         expected_pickled = (
                 '{"things": [{'
-                    '"py/object": "typedjson._samples.Thing",'
+                    '"py/object": "jsonstruct._samples.Thing",'
                     ' "name": "data",'
                     ' "child": null}'
                 ']}')
@@ -84,7 +84,7 @@ class DemjsonTestCase(BackendTestCase):
                 '{"things":[{'
                     '"child":null,'
                     '"name":"data",'
-                    '"py/object":"typedjson._samples.Thing"}'
+                    '"py/object":"jsonstruct._samples.Thing"}'
                 ']}')
         self.assertEncodeDecode(expected_pickled)
 
@@ -96,7 +96,7 @@ class JsonlibTestCase(BackendTestCase):
     def test(self):
         expected_pickled = (
                 '{"things":[{'
-                    '"py\/object":"typedjson._samples.Thing",'
+                    '"py\/object":"jsonstruct._samples.Thing",'
                     '"name":"data","child":null}'
                 ']}')
         self.assertEncodeDecode(expected_pickled)
@@ -109,7 +109,7 @@ class YajlTestCase(BackendTestCase):
     def test(self):
         expected_pickled = (
                 '{"things":[{'
-                    '"py/object":"typedjson._samples.Thing",'
+                    '"py/object":"jsonstruct._samples.Thing",'
                     '"name":"data","child":null}'
                 ']}')
         self.assertEncodeDecode(expected_pickled)
@@ -123,7 +123,7 @@ class UJsonTestCase(BackendTestCase):
     def test(self):
         expected_pickled = (
                 '{"things":[{'
-                    '"py\/object":"typedjson._samples.Thing",'
+                    '"py\/object":"jsonstruct._samples.Thing",'
                     '"name":"data","child":null}'
                 ']}')
         self.assertEncodeDecode(expected_pickled)

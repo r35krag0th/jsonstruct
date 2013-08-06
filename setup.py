@@ -16,23 +16,23 @@ except ImportError:
     import distutils.core as setup_mod
 
 here = os.path.dirname(__file__)
-version = os.path.join(here, 'typedjson', 'version.py')
+version = os.path.join(here, 'jsonstruct', 'version.py')
 scope = {}
 exec(open(version).read(), scope)
 
 SETUP_ARGS = dict(
-    name="typedjson",
+    name="jsonstruct",
     version=scope['VERSION'],
     description="Python library for serializing any "
                 "arbitrary object graph into JSON",
     long_description =
-        "typedjson converts typed Python object to and from JSON.",
+        "jsonstruct converts typed Python object to and from JSON.",
     author="Xingchen Yu",
     author_email="initialxy -at- gmail.com",
-    url="https://github.com/initialxy/typedjson",
+    url="https://github.com/initialxy/jsonstruct",
     license="BSD",
     platforms=['POSIX', 'Windows'],
-    keywords=['typedjson', 'typed json', 'json', 'pickle', 'marshal',
+    keywords=['jsonstruct', 'typed json', 'json', 'pickle', 'marshal',
             'unmarshal', 'serialization', 'deserialization',
             'JavaScript Object Notation'],
     classifiers=[
@@ -47,7 +47,7 @@ SETUP_ARGS = dict(
         "Programming Language :: JavaScript",
     ],
     options={'clean': {'all': 1}},
-    packages=["typedjson"],
+    packages=["jsonstruct"],
 )
 
 

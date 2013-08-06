@@ -16,7 +16,7 @@ sys.path.insert(1, os.path.dirname(testdir))
 import unittest
 
 import util_tests
-import typedjson_test
+import jsonstruct_test
 import thirdparty_tests
 import backends_tests
 import document_test
@@ -24,7 +24,7 @@ import document_test
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(util_tests.suite())
-    suite.addTest(typedjson_test.suite())
+    suite.addTest(jsonstruct_test.suite())
     suite.addTest(document_test.suite())
     suite.addTest(thirdparty_tests.suite())
     suite.addTest(backends_tests.suite())

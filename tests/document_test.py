@@ -1,7 +1,7 @@
 import unittest
-import typedjson
+import jsonstruct
 
-from typedjson._samples import Document, Section, Question
+from jsonstruct._samples import Document, Section, Question
 
 class DocumentTestCase(unittest.TestCase):
     def test_cyclical(self):
@@ -30,8 +30,8 @@ class DocumentTestCase(unittest.TestCase):
         section2.add_child(question3)
         section2.add_child(question4)
 
-        pickled = typedjson.encode(document)
-        unpickled = typedjson.decode(pickled)
+        pickled = jsonstruct.encode(document)
+        unpickled = jsonstruct.decode(pickled)
 
         self.assertEqual(str(document), str(unpickled))
 

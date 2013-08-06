@@ -17,19 +17,19 @@ import sys
 
 from six import u
 
-import typedjson
+import jsonstruct
 
-from typedjson import handlers
-from typedjson import tags
-from typedjson.compat import unicode
+from jsonstruct import handlers
+from jsonstruct import tags
+from jsonstruct.compat import unicode
 
-from typedjson._samples import (
+from jsonstruct._samples import (
         BrokenReprThing,
         DictSubclass,
         ListSubclass,
         ListSubclassWithInit,
         NamedTuple,
-        ObjWithtypedjsonRepr,
+        ObjWithJsonStructRepr,
         SetSubclass,
         Thing,
         ThingWithSlots,
@@ -39,8 +39,8 @@ from typedjson._samples import (
 
 class PicklingTestCase(unittest.TestCase):
     def setUp(self):
-        self.pickler = typedjson.pickler.Pickler()
-        self.unpickler = typedjson.unpickler.Unpickler()
+        self.pickler = jsonstruct.pickler.Pickler()
+        self.unpickler = jsonstruct.unpickler.Unpickler()
 
     def test_string(self):
         self.assertEqual('a string', self.pickler.flatten('a string'))
@@ -164,17 +164,17 @@ class PicklingTestCase(unittest.TestCase):
 
     def test_tuple_roundtrip(self):
         data = (1,2,3)
-        newdata = typedjson.decode(typedjson.encode(data))
+        newdata = jsonstruct.decode(jsonstruct.encode(data))
         self.assertEqual(data, newdata)
 
     def test_set_roundtrip(self):
         data = set([1,2,3])
-        newdata = typedjson.decode(typedjson.encode(data))
+        newdata = jsonstruct.decode(jsonstruct.encode(data))
         self.assertEqual(data, newdata)
 
     def test_list_roundtrip(self):
         data = [1,2,3]
-        newdata = typedjson.decode(typedjson.encode(data))
+        newdata = jsonstruct.decode(jsonstruct.encode(data))
         self.assertEqual(data, newdata)
 
     def test_defaultdict_roundtrip(self):
@@ -184,10 +184,10 @@ class PicklingTestCase(unittest.TestCase):
         defaultdict['a'] = 1
         defaultdict['b'].append(2)
         defaultdict['c'] = collections.defaultdict(dict)
-        # typedjson work your magic
-        encoded = typedjson.encode(defaultdict)
-        newdefaultdict = typedjson.decode(encoded)
-        # typedjson never fails
+        # jsonstruct work your magic
+        encoded = jsonstruct.encode(defaultdict)
+        newdefaultdict = jsonstruct.decode(encoded)
+        # jsonstruct never fails
         self.assertEqual(newdefaultdict['a'], 1)
         self.assertEqual(newdefaultdict['b'], [2])
         self.assertEqual(type(newdefaultdict['c']), collections.defaultdict)
@@ -197,8 +197,8 @@ class PicklingTestCase(unittest.TestCase):
     def test_deque_roundtrip(self):
         """Make sure we can handle collections.deque"""
         old_deque = collections.deque([0, 1, 2])
-        encoded = typedjson.encode(old_deque)
-        new_deque = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(old_deque)
+        new_deque = jsonstruct.decode(encoded)
         self.assertNotEqual(encoded, 'nil')
         self.assertEqual(old_deque[0], 0)
         self.assertEqual(new_deque[0], 0)
@@ -209,8 +209,8 @@ class PicklingTestCase(unittest.TestCase):
 
     def test_namedtuple_roundtrip(self):
         old_nt = NamedTuple(0, 1, 2)
-        encoded = typedjson.encode(old_nt)
-        new_nt = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(old_nt)
+        new_nt = jsonstruct.decode(encoded)
         self.assertEqual(type(old_nt), type(new_nt))
         self.assertTrue(old_nt is not new_nt)
         self.assertEqual(old_nt.a, new_nt.a)
@@ -280,7 +280,7 @@ class PicklingTestCase(unittest.TestCase):
         parent.child.parent = parent
         parent.child.sibling.parent = parent
 
-        cloned = typedjson.decode(typedjson.encode(parent))
+        cloned = jsonstruct.decode(jsonstruct.encode(parent))
 
         self.assertEqual(parent.name,
                          cloned.name)
@@ -299,15 +299,15 @@ class PicklingTestCase(unittest.TestCase):
 
     def test_newstyleslots(self):
         obj = ThingWithSlots(True, False)
-        jsonstr = typedjson.encode(obj)
-        newobj = typedjson.decode(jsonstr)
+        jsonstr = jsonstruct.encode(obj)
+        newobj = jsonstruct.decode(jsonstr)
         self.assertTrue(newobj.a)
         self.assertFalse(newobj.b)
 
     def test_newstyleslots_with_children(self):
         obj = ThingWithSlots(Thing('a'), Thing('b'))
-        jsonstr = typedjson.encode(obj)
-        newobj = typedjson.decode(jsonstr)
+        jsonstr = jsonstruct.encode(obj)
+        newobj = jsonstruct.decode(jsonstr)
         self.assertEqual(newobj.a.name, 'a')
         self.assertEqual(newobj.b.name, 'b')
 
@@ -336,11 +336,11 @@ class PicklingTestCase(unittest.TestCase):
         flattened = self.pickler.flatten(obj)
         self.assertEqual({'key1': 1,
                           tags.OBJECT:
-                            'typedjson._samples.DictSubclass'
+                            'jsonstruct._samples.DictSubclass'
                          },
                          flattened)
         self.assertEqual(flattened[tags.OBJECT],
-                         'typedjson._samples.DictSubclass')
+                         'jsonstruct._samples.DictSubclass')
 
         inflated = self.unpickler.restore(flattened)
         self.assertEqual(1, inflated['key1'])
@@ -383,8 +383,8 @@ class PicklingTestCase(unittest.TestCase):
 
     def test_datetime_inside_int_keys(self):
         t = datetime.time(hour=10)
-        s = typedjson.encode({1:t, 2:t})
-        d = typedjson.decode(s)
+        s = jsonstruct.encode({1:t, 2:t})
+        d = jsonstruct.decode(s)
         self.assertEqual(d["1"], d["2"])
         self.assertTrue(d["1"] is d["2"])
         self.assertTrue(isinstance(d["1"], datetime.time))
@@ -395,7 +395,7 @@ class PicklingTestCase(unittest.TestCase):
         """
         br = BrokenReprThing('test')
         obj = { br: True }
-        pickler = typedjson.pickler.Pickler()
+        pickler = jsonstruct.pickler.Pickler()
         flattened = pickler.flatten(obj)
         self.assertTrue('<BrokenReprThing "test">' in flattened)
         self.assertTrue(flattened['<BrokenReprThing "test">'])
@@ -444,7 +444,7 @@ class PicklingTestCase(unittest.TestCase):
 
         flattened = self.pickler.flatten(obj)
         self.assertEqual(flattened['classref'], {
-                            tags.TYPE: 'typedjson._samples.Thing',
+                            tags.TYPE: 'jsonstruct._samples.Thing',
                          })
 
         inflated = self.unpickler.restore(flattened)
@@ -475,37 +475,37 @@ class PicklingTestCase(unittest.TestCase):
         inflated = self.unpickler.restore(flattened)
         self.assertEqual(type(inflated), ListSubclassWithInit)
 
-class typedjsonTestCase(unittest.TestCase):
+class jsonstructTestCase(unittest.TestCase):
     def setUp(self):
         self.obj = Thing('A name')
         self.expected_json = (
-                '{"'+tags.OBJECT+'": "typedjson._samples.Thing",'
+                '{"'+tags.OBJECT+'": "jsonstruct._samples.Thing",'
                 ' "name": "A name", "child": null}')
 
     def test_encode(self):
-        pickled = typedjson.encode(self.obj)
+        pickled = jsonstruct.encode(self.obj)
         self.assertEqual(self.expected_json, pickled)
 
     def test_encode_notunpicklable(self):
-        pickled = typedjson.encode(self.obj, unpicklable=False)
+        pickled = jsonstruct.encode(self.obj, unpicklable=False)
         self.assertEqual('{"name": "A name", "child": null}', pickled)
 
     def test_decode(self):
-        unpickled = typedjson.decode(self.expected_json)
+        unpickled = jsonstruct.decode(self.expected_json)
         self.assertEqual(self.obj.name, unpickled.name)
         self.assertEqual(type(self.obj), type(unpickled))
 
     def test_json(self):
-        pickled = typedjson.encode(self.obj)
+        pickled = jsonstruct.encode(self.obj)
         self.assertEqual(self.expected_json, pickled)
 
-        unpickled = typedjson.decode(self.expected_json)
+        unpickled = jsonstruct.decode(self.expected_json)
         self.assertEqual(self.obj.name, unpickled.name)
         self.assertEqual(type(self.obj), type(unpickled))
 
     def test_unicode_dict_keys(self):
-        pickled = typedjson.encode({'é'.decode('utf-8'): 'é'.decode('utf-8')})
-        unpickled = typedjson.decode(pickled)
+        pickled = jsonstruct.encode({'é'.decode('utf-8'): 'é'.decode('utf-8')})
+        unpickled = jsonstruct.decode(pickled)
         self.assertEqual(unpickled['é'.decode('utf-8')], 'é'.decode('utf-8'))
         self.assertTrue('é'.decode('utf-8') in unpickled)
 
@@ -516,9 +516,9 @@ class typedjsonTestCase(unittest.TestCase):
 
         TODO: handle dictionaries with non-stringy keys.
         """
-        pickled = typedjson.encode({(1, 2): 3,
+        pickled = jsonstruct.encode({(1, 2): 3,
                                      (4, 5): { (7, 8): 9 }})
-        unpickled = typedjson.decode(pickled)
+        unpickled = jsonstruct.decode(pickled)
         subdict = unpickled['(4, 5)']
 
         self.assertEqual(unpickled['(1, 2)'], 3)
@@ -530,8 +530,8 @@ class typedjsonTestCase(unittest.TestCase):
         least convert those tuples into repr strings.
 
         """
-        pickled = typedjson.encode({datetime.datetime(2008, 12, 31): True})
-        unpickled = typedjson.decode(pickled)
+        pickled = jsonstruct.encode({datetime.datetime(2008, 12, 31): True})
+        unpickled = jsonstruct.decode(pickled)
         self.assertTrue(unpickled['datetime.datetime(2008, 12, 31, 0, 0)'])
 
     def test_object_dict_keys(self):
@@ -539,8 +539,8 @@ class typedjsonTestCase(unittest.TestCase):
 
         """
         thing = Thing('random')
-        pickled = typedjson.encode({thing: True})
-        unpickled = typedjson.decode(pickled)
+        pickled = jsonstruct.encode({thing: True})
+        unpickled = jsonstruct.decode(pickled)
         self.assertEqual(unpickled,
                 {u('Thing("random")'): True})
 
@@ -548,8 +548,8 @@ class typedjsonTestCase(unittest.TestCase):
         """Test that objects in lists are referenced correctly"""
         a = Thing('a')
         b = Thing('b')
-        pickled = typedjson.encode([a, b, b])
-        unpickled = typedjson.decode(pickled)
+        pickled = jsonstruct.encode([a, b, b])
+        unpickled = jsonstruct.decode(pickled)
         self.assertEqual(unpickled[1], unpickled[2])
         self.assertEqual(type(unpickled[0]), Thing)
         self.assertEqual(unpickled[0].name, 'a')
@@ -557,20 +557,20 @@ class typedjsonTestCase(unittest.TestCase):
         self.assertEqual(unpickled[2].name, 'b')
 
     def test_load_backend(self):
-        """Test that we can call typedjson.load_backend()
+        """Test that we can call jsonstruct.load_backend()
 
         """
-        typedjson.load_backend('simplejson', 'dumps', 'loads', ValueError)
+        jsonstruct.load_backend('simplejson', 'dumps', 'loads', ValueError)
 
     def test_set_preferred_backend_allows_magic(self):
         """Tests that we can use the pluggable backends magically
         """
         backend = 'os.path'
-        typedjson.load_backend(backend, 'split', 'join', AttributeError)
-        typedjson.set_preferred_backend(backend)
+        jsonstruct.load_backend(backend, 'split', 'join', AttributeError)
+        jsonstruct.set_preferred_backend(backend)
 
-        slash_hello, world = typedjson.encode('/hello/world')
-        typedjson.remove_backend(backend)
+        slash_hello, world = jsonstruct.encode('/hello/world')
+        jsonstruct.remove_backend(backend)
 
         self.assertEqual(slash_hello, '/hello')
         self.assertEqual(world, 'world')
@@ -579,37 +579,37 @@ class typedjsonTestCase(unittest.TestCase):
         """Test that we can load a submodule as a backend
 
         """
-        typedjson.load_backend('os.path', 'split', 'join', AttributeError)
-        self.assertTrue('os.path' in typedjson.json._backend_names and
-                        'os.path' in typedjson.json._encoders and
-                        'os.path' in typedjson.json._decoders and
-                        'os.path' in typedjson.json._encoder_options and
-                        'os.path' in typedjson.json._decoder_exceptions)
+        jsonstruct.load_backend('os.path', 'split', 'join', AttributeError)
+        self.assertTrue('os.path' in jsonstruct.json._backend_names and
+                        'os.path' in jsonstruct.json._encoders and
+                        'os.path' in jsonstruct.json._decoders and
+                        'os.path' in jsonstruct.json._encoder_options and
+                        'os.path' in jsonstruct.json._decoder_exceptions)
 
     def _backend_is_partially_loaded(self, backend):
         """Return True if the specified backend is incomplete"""
-        return (backend in typedjson.json._backend_names or
-                backend in typedjson.json._encoders or
-                backend in typedjson.json._decoders or
-                backend in typedjson.json._encoder_options or
-                backend in typedjson.json._decoder_exceptions)
+        return (backend in jsonstruct.json._backend_names or
+                backend in jsonstruct.json._encoders or
+                backend in jsonstruct.json._decoders or
+                backend in jsonstruct.json._encoder_options or
+                backend in jsonstruct.json._decoder_exceptions)
 
     def test_load_backend_skips_bad_encode(self):
         """Test that we ignore bad encoders"""
 
-        typedjson.load_backend('os.path', 'bad!', 'split', AttributeError)
+        jsonstruct.load_backend('os.path', 'bad!', 'split', AttributeError)
         self.failIf(self._backend_is_partially_loaded('os.path'))
 
     def test_load_backend_skips_bad_decode(self):
         """Test that we ignore bad decoders"""
 
-        typedjson.load_backend('os.path', 'join', 'bad!', AttributeError)
+        jsonstruct.load_backend('os.path', 'join', 'bad!', AttributeError)
         self.failIf(self._backend_is_partially_loaded('os.path'))
 
     def test_load_backend_skips_bad_decoder_exceptions(self):
         """Test that we ignore bad decoder exceptions"""
 
-        typedjson.load_backend('os.path', 'join', 'split', 'bad!')
+        jsonstruct.load_backend('os.path', 'join', 'split', 'bad!')
         self.failIf(self._backend_is_partially_loaded('os.path'))
 
     def test_list_item_reference(self):
@@ -617,8 +617,8 @@ class typedjsonTestCase(unittest.TestCase):
         thing.child = Thing('child')
         thing.child.refs = [thing]
 
-        encoded = typedjson.encode(thing)
-        decoded = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(thing)
+        decoded = jsonstruct.decode(encoded)
 
         self.assertEqual(id(decoded.child.refs[0]), id(decoded))
 
@@ -629,8 +629,8 @@ class typedjsonTestCase(unittest.TestCase):
         thing.b.append(thing.a)
         thing.b.append([thing.a])
 
-        encoded = typedjson.encode(thing)
-        decoded = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(thing)
+        decoded = jsonstruct.decode(encoded)
 
         self.assertEqual(decoded.a[0], 1)
         self.assertEqual(decoded.b[0], 1)
@@ -638,13 +638,13 @@ class typedjsonTestCase(unittest.TestCase):
         self.assertEqual(id(decoded.a), id(decoded.a[1]))
         self.assertEqual(id(decoded.a), id(decoded.a[2][0]))
 
-    def test_repr_using_typedjson(self):
-        thing = ObjWithtypedjsonRepr()
-        thing.child = ObjWithtypedjsonRepr()
+    def test_repr_using_jsonstruct(self):
+        thing = ObjWithJsonStructRepr()
+        thing.child = ObjWithJsonStructRepr()
         thing.child.parent = thing
 
-        encoded = typedjson.encode(thing)
-        decoded = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(thing)
+        decoded = jsonstruct.decode(encoded)
 
         self.assertEqual(id(decoded), id(decoded.child.parent))
 
@@ -658,8 +658,8 @@ class typedjsonTestCase(unittest.TestCase):
         d.update(a=1)
         d.update(b=2)
 
-        encoded = typedjson.encode(d)
-        decoded = typedjson.decode(encoded)
+        encoded = jsonstruct.encode(d)
+        decoded = jsonstruct.decode(encoded)
 
         self.assertEqual(d, decoded)
 
@@ -693,10 +693,10 @@ class ExternalHandlerTestCase(unittest.TestCase):
         self.assertEqual(unicode(obj), u('test'))
 
         # Encode into JSON
-        content = typedjson.encode(obj)
+        content = jsonstruct.encode(obj)
 
         # Resurrect from JSON
-        new_obj = typedjson.decode(content)
+        new_obj = jsonstruct.decode(content)
         new_obj += ' passed'
 
         self.assertEqual(unicode(new_obj), u('test passed'))
@@ -707,11 +707,11 @@ class ExternalHandlerTestCase(unittest.TestCase):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(PicklingTestCase))
-    suite.addTest(unittest.makeSuite(typedjsonTestCase))
+    suite.addTest(unittest.makeSuite(jsonstructTestCase))
     suite.addTest(unittest.makeSuite(ExternalHandlerTestCase))
-    suite.addTest(doctest.DocTestSuite(typedjson.pickler))
-    suite.addTest(doctest.DocTestSuite(typedjson.unpickler))
-    suite.addTest(doctest.DocTestSuite(typedjson))
+    suite.addTest(doctest.DocTestSuite(jsonstruct.pickler))
+    suite.addTest(doctest.DocTestSuite(jsonstruct.unpickler))
+    suite.addTest(doctest.DocTestSuite(jsonstruct))
     return suite
 
 if __name__ == '__main__':

@@ -9,9 +9,9 @@
 import unittest
 import datetime
 
-import typedjson
+import jsonstruct
 
-from typedjson._samples import ObjWithDate
+from jsonstruct._samples import ObjWithDate
 
 
 # UTC implementation from Python 2.7 docs
@@ -36,37 +36,37 @@ class DateTimeTests(unittest.TestCase):
         pickle and then unpickle object, then assert the new object is the
         same as the original.
         """
-        pickled = typedjson.encode(obj)
-        unpickled = typedjson.decode(pickled)
+        pickled = jsonstruct.encode(obj)
+        unpickled = jsonstruct.decode(pickled)
         self.assertEquals(obj, unpickled)
 
     def test_datetime(self):
         """
-        typedjson should pickle a datetime object
+        jsonstruct should pickle a datetime object
         """
         self._roundtrip(datetime.datetime.now())
 
     def test_date(self):
         """
-        typedjson should pickle a date object
+        jsonstruct should pickle a date object
         """
         self._roundtrip(datetime.datetime.today())
 
     def test_time(self):
         """
-        typedjson should pickle a time object
+        jsonstruct should pickle a time object
         """
         self._roundtrip(datetime.datetime.now().time())
 
     def test_timedelta(self):
         """
-        typedjson should pickle a timedelta object
+        jsonstruct should pickle a timedelta object
         """
         self._roundtrip(datetime.timedelta(days=3))
 
     def test_utc(self):
         """
-        typedjson should be able to encode and decode a datetime with a
+        jsonstruct should be able to encode and decode a datetime with a
         simple, pickleable UTC tzinfo.
         """
         self._roundtrip(datetime.datetime.utcnow().replace(tzinfo=utc))
@@ -77,14 +77,14 @@ class DateTimeTests(unittest.TestCase):
         simple, human-readable strings.
         """
         obj = datetime.datetime.now()
-        pickler = typedjson.Pickler(unpicklable=False)
+        pickler = jsonstruct.Pickler(unpicklable=False)
         flattened = pickler.flatten(obj)
         self.assertEqual(str(obj), flattened)
 
     def test_object_with_datetime(self):
         test_obj = ObjWithDate()
-        json = typedjson.encode(test_obj)
-        test_obj_decoded = typedjson.decode(json)
+        json = jsonstruct.encode(test_obj)
+        test_obj_decoded = jsonstruct.decode(json)
         self.assertEqual(test_obj_decoded.data['ts'],
                          test_obj_decoded.data_ref['ts'])
 

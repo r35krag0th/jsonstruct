@@ -13,9 +13,9 @@ import time
 import types
 import inspect
 
-from typedjson import tags
-from typedjson.compat import set
-from typedjson.compat import unicode, long
+from jsonstruct import tags
+from jsonstruct.compat import set
+from jsonstruct.compat import unicode, long
 
 
 COLLECTIONS = (list, set, tuple)
