@@ -44,5 +44,5 @@ The purpose of this library is that you can use it to create typed RESTful web s
 
 This project is licensed under BSD License. Please see COPYING
 
-**I Haven't really started working on this project yet, so right now it's mostly just jsonpickle. I will remove this line when it's ready to be used.**
+**This library is currently at a very immature stage. Please help testing it out.**
 
