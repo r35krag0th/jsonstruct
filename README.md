@@ -7,40 +7,72 @@ The key difference between this library and jsonpickle is that during deserializ
     
     import jsonstruct
 
+    # Create sample classes
     class Address(object):
         city = ""
         province = ""
 
 
-    # Create sample types
-    class Test(object):
+    class Developer(object):
         name = ""
         title = ""
         address = Address()
-        safe_houses = [Address()]   # This indicates a list of Address.
+        safe_houses = [Address()]           # Indicates a list of Addresses.
+        work_locations = {"": Address()}    # Indicates a dict of Addresses.
+        language_set = set([""])            # Indicates a set of str.
 
 
-    t = Test()
-    t.name = "Alice"
-    t.title = "Developer"
-    t.address = Address()
-    t.address.city = "Toronto"
-    t.address.province = "Ontario"
+    d = Developer()
+    d.name = "Bob"
+    d.title = "Developer"
+    d.address = Address()
+    d.address.city = "Toronto"
+    d.address.province = "Ontario"
 
-    t.safe_houses = [Address(), Address()]
-    t.safe_houses[0].city = "Waterloo"
-    t.safe_houses[1].city = "Middle of nowhere"
+    d.safe_houses = [Address(), Address()]
+    d.safe_houses[0].city = "Secret"
+    d.safe_houses[1].city = "Middle of nowhere"
 
-    j = jsonstruct.encode(t)
-    print j         # '{"title": "Developer", "name": "Alice", "safe_houses": [{"city": "Waterloo"}, {"city": "Middle of nowhere"}], "address": {"province": "Ontario", "city": "Toronto"}}'
+    d.work_locations = {"Company": Address()}
+    d.work_locations["Company"].city = "Markham"
+    d.work_locations["Company"].province = "Ontario"
 
-    u = jsonstruct.decode(j, Test)
+    d.language_set = set(["en", "fr"])
 
-    print u.name    # 'Alice'
-    print u.title   # 'Developer'
-    print u.address.city        # 'Toronto'
-    print u.safe_houses[0].city # 'Waterloo'
-    print u.safe_houses[1].city # 'Middle of nowhere'
+    j = jsonstruct.encode(d)
+    print j         # {"name": "Bob", "title": "Developer",
+                    # "work_locations":
+                    # {"Company": {"province": "Ontario", "city": "Markham"}},
+                    # "address": {"province": "Ontario", "city": "Toronto"},
+                    # "language_set": ["fr", "en"],
+                    # "safe_houses":
+                    # [{"city": "Secret"}, {"city": "Middle of nowhere"}]}
+
+    e = jsonstruct.decode(j, Developer)
+
+    print e.name    # Bob
+    print e.title   # Developer
+    print e.address.city        # Toronto
+    print e.safe_houses[0].city # Secret
+    print e.safe_houses[1].city # Middle of nowhere
+    print e.work_locations["Company"].city      # Markham
+    print e.work_locations["Company"].province  # Ontario
+    print e.language_set        # set([u'fr', u'en'])
+
+    # By default the encoder will filter out any attributes with None value;
+    # in case the unmarshaller doesn't like having null value assigned on
+    # primitive types (Jackson is fine though).
+    a = Address()
+    a.city = "Toronto"
+    a.province = None
+
+    print jsonstruct.encode(a)  # {"city": "Toronto"}
+
+    # However this behaviour can be overridden with
+    # is_filter_none_attr = False argument on encode().
+
+    print jsonstruct.encode(a, is_filter_none_attr = False)
+    # {"province": null, "city": "Toronto"}
 
 The purpose of this library is allow creating typed RESTful web services or clients, where data schema need to be defined and shared between client and server. It is also not ideal to expect incoming or outgoing JSON request or response to contain Python types as part of the JSON. Data types needed for services could sometimes grow very complex, making schema/type definition much more important and easier to understand.
 
@@ -48,5 +80,5 @@ Please note that this due to the duct-typing nature of Python, when constructing
 
 This project is licensed under BSD License. Please see COPYING
 
-**This library is currently at a very immature stage. Please help testing it out.**
+**This library pretty much ready. Please help testing it.**
 
