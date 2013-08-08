@@ -42,7 +42,7 @@ SETUP_ARGS = dict(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Development Status :: 5 - Stable",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: JavaScript",
     ],
