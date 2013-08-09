@@ -85,10 +85,14 @@ This project is licensed under BSD License. Please see COPYING
 Download and Install
 --------------------
 
-Download the code base for this project either by cloning this git repository
+This library is available from pypi. It can be installed using pip:
+
+    pip install jsonstruct
+
+Alternately, you can download its code base for this project either by cloning this git repository
 
     git clone https://github.com/initialxy/jsonstruct.git
 
-or download ZIP and extract its contents. Then cd into the root directory of this project and run
+or download the ZIP file and extract its contents. Then cd into the root directory of this project and run
 
     python setup.py install
