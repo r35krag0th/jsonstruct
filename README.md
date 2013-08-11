@@ -3,7 +3,7 @@ jsonstruct
 
 jsonstruct is a library for two way conversion of typed Python object and JSON. This project is originally a fork of [jsonpickle](jsonpickle.github.com) (Thanks guys!).
 
-The key difference between this library and jsonpickle is that during deserialization, [jsonpickle](jsonpickle.github.com) requires Python types to be recorded as part of the JSON. This library intends to remove this requirement, instead, allows you to specify a class, whose definition will be inspected. It will return an instance of the given class as result. This approach is similar to how [Jackson](https://github.com/FasterXML/jackson) works.
+The key difference between this library and jsonpickle is that during deserialization, [jsonpickle](jsonpickle.github.com) requires Python types to be recorded as part of the JSON. This library intends to remove this requirement, instead, requires a class to be passed in as an argument so that its definition can be inspected. It will then return an instance of the given class. This approach is similar to how [Jackson](https://github.com/FasterXML/jackson) (of Java) works.
     
     import jsonstruct
 
